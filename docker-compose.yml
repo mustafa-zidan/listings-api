@@ -1,0 +1,22 @@
+services:
+  app:
+    container_name: listings-api
+    build: .
+    command: ["fastapi", "dev", "src/app/main.py"]
+    volumes:
+      - ./src:/app/src
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://user:password@db:5432/listings
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+  postgres:
+    image: postgres:14
+    container_name: postgres
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: listings
+    ports:
+      - "5432:5432"
