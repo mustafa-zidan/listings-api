@@ -1,0 +1,25 @@
+[project]
+name = "listing-api"
+version = "0.1.0"
+description = "Listing API assignment"
+readme = "README.md"
+requires-python = ">=3.12"
+
+dependencies = [
+    "fastapi[standard]>=0.115.6, <1.0.0",
+    "sqlalchemy>=2.0.37, <3.0.0",
+    "psycopg[binary,pool]>=3.2.4, <4.0.0",
+
+]
+
+[project.optional-dependencies]
+development = [
+    "pytest>=8.3.4, <9.0.0",
+    "pytest-asyncio>=0.25.2, <1.0.0",
+    "pytest-dotenv>=0.5.2, <1.0.0",
+]
+
+#[build-system]
+#requires = ["poetry-core>=1.0.0"]
+#build-backend = "poetry.core.masonry.api"
+
