@@ -22,3 +22,6 @@ out/
 *.log
 *.sqlite3
 *.db
+
+# project specific
+.env
