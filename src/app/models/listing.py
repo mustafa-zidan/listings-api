@@ -13,3 +13,9 @@ class Listing(Base):
 
     string_properties = relationship("StringPropertyValue", back_populates="listing", cascade="all, delete-orphan")
     boolean_properties = relationship("BooleanPropertyValue", back_populates="listing", cascade="all, delete-orphan")
+
+    entities = relationship(
+        "DatasetEntity",
+        primaryjoin="any_(Listing.dataset_entity_ids)==foreign(DatasetEntity.entity_id)",
+        viewonly=True,
+    )

@@ -1,12 +1,13 @@
 from fastapi import FastAPI
 
+
+from app.core.database import database_lifespan
 from app.routers import listings
 
-app = FastAPI()
-
-
-@app.get("/")
-async def root():
-    return {"message": "Tomato"}
+app = FastAPI(
+    title="Listings API",
+    docs_url="/api/v1/docs",
+    lifespan=database_lifespan,
+)
 
 app.include_router(listings.router, prefix="/api/v1/listings", tags=["listings"])

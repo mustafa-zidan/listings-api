@@ -1,3 +1,4 @@
+import os
 from typing import AsyncGenerator
 
 import pytest
@@ -41,7 +42,7 @@ async def async_client(anyio_backend: str) -> AsyncGenerator[AsyncClient, None]:
         yield client
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="session")
 def postgres_container() -> PostgresContainer:
     """
     Spin up a PostgreSQL container for testing.
@@ -63,11 +64,13 @@ def get_container_database_url(postgres_container: PostgresContainer) -> str:
     Returns:
         str: A connection string for the test database using psycopg3 dirver since postgres container still users psycopg2
     """
-    return (
+    database_url = (
         f"postgresql+psycopg://{postgres_container.username}:{postgres_container.password}"
         f"@{postgres_container.get_container_host_ip()}:{postgres_container.get_exposed_port(postgres_container.port)}"
         f"/{postgres_container.dbname}"
     )
+    os.environ["DATABASE_URL"] = database_url
+    return database_url
 
 
 @pytest.fixture(scope="module")

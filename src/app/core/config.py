@@ -3,6 +3,8 @@ import os
 
 logger = logging.getLogger(__name__)
 
+
+
 def get_database_url() -> str:
     """
     Retrieve the database URL from the environment variables or construct it
