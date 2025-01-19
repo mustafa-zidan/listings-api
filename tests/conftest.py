@@ -10,14 +10,31 @@ from app.main import app
 from app.models import Base
 
 
-# Set the event loop scope explicitly
+# Set the event loop scope explicitly for AnyIO
 @pytest.fixture(scope="session")
-def anyio_backend():
+def anyio_backend() -> str:
+    """
+    Specify the backend to use for AnyIO.
+
+    Returns:
+        str: The name of the backend (e.g., "asyncio").
+    """
     return "asyncio"
 
 
 @pytest.fixture(scope="session")
-async def async_client(anyio_backend):
+async def async_client(anyio_backend: str) -> AsyncGenerator[AsyncClient, None]:
+    """
+    Create an HTTP client for testing the FastAPI app.
+
+    This client simulates requests to the application without starting an actual server.
+
+    Args:
+        anyio_backend (str): The backend used by AnyIO.
+
+    Yields:
+        AsyncClient: An HTTP client for the test.
+    """
     async with AsyncClient(
             transport=ASGITransport(app=app), base_url="http://test"
     ) as client:
@@ -25,17 +42,32 @@ async def async_client(anyio_backend):
 
 
 @pytest.fixture(scope="module")
-def postgres_container():
-    """Spin up a PostgreSQL container for testing."""
+def postgres_container() -> PostgresContainer:
+    """
+    Spin up a PostgreSQL container for testing.
+
+    Yields:
+        PostgresContainer: A running PostgreSQL container.
+    """
     with PostgresContainer("postgres:latest") as postgres:
         yield postgres
 
 
-def get_container_database_url(postgres_container:PostgresContainer) -> str:
-    """ A helper to the database URL from the PostgreSQL container."""
-    return f"postgresql+psycopg://{postgres_container.username}:{postgres_container.password}"\
-           f"@{postgres_container.get_container_host_ip()}:{postgres_container.get_exposed_port(postgres_container.port)}"\
-           f"/{postgres_container.dbname}"
+def get_container_database_url(postgres_container: PostgresContainer) -> str:
+    """
+    Helper to generate the database URL from the PostgreSQL container.
+
+    Args:
+        postgres_container (PostgresContainer): The running PostgreSQL container.
+
+    Returns:
+        str: A connection string for the test database using psycopg3 dirver since postgres container still users psycopg2
+    """
+    return (
+        f"postgresql+psycopg://{postgres_container.username}:{postgres_container.password}"
+        f"@{postgres_container.get_container_host_ip()}:{postgres_container.get_exposed_port(postgres_container.port)}"
+        f"/{postgres_container.dbname}"
+    )
 
 
 @pytest.fixture(scope="module")
@@ -54,14 +86,19 @@ async def engine(postgres_container: PostgresContainer) -> AsyncGenerator[AsyncE
     """
     database_url: str = get_container_database_url(postgres_container)
     engine: AsyncEngine = create_async_engine(database_url, echo=True)
-    # Create all tables
+
+    # Create all tables before tests
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+
     yield engine
-    # Drop all tables
+
+    # Drop all tables after tests
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
+
     await engine.dispose()
+
 
 @pytest.fixture(scope="function")
 async def session(engine: AsyncEngine) -> AsyncGenerator[AsyncSession, None]:
@@ -90,5 +127,6 @@ async def session(engine: AsyncEngine) -> AsyncGenerator[AsyncSession, None]:
         for table in reversed(Base.metadata.sorted_tables):
             await session.execute(text(f"TRUNCATE TABLE {table.name} CASCADE"))
 
+        # Commit the truncation
         await session.commit()
         await session.close()
