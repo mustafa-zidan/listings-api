@@ -54,7 +54,7 @@ class DatabaseSessionManager:
     @property
     def engine(self):
         if self._engine is None:
-            _engine_kwargs: Dict[str, Any] = {"echo": True}
+            _engine_kwargs: Dict[str, Any] = {"echo": False}
             self._engine = create_async_engine(get_database_url(), **_engine_kwargs)
         return self._engine
 

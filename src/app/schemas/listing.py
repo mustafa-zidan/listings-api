@@ -27,12 +27,12 @@ class ListingFilterSchema(BaseModel):
     listing_id: str | None = Field(None, description="Filter by listing ID.")
     scan_date_from: str | None = Field(None, description="Filter by minimum scan date (YYYY-MM-DD).")
     scan_date_to: str | None = Field(None, description="Filter by maximum scan date (YYYY-MM-DD).")
-    is_active: str | None = Field(None, description="Filter by active status.")
+    is_active: bool | None = Field(None, description="Filter by active status.")
     image_hashes: List[str] | None = Field(None, description="Filter by image hashes.")
     dataset_entities: Dict[str, str] | None = Field(
         None, description="Filter by dataset entities JSON data."
     )
-    property_filters: Optional[Dict[int, str]] = Field(
+    property_filters: Dict[int, str] = Field(
         None, description="Dictionary of property filters (property_id: expected_value)."
     )
 
@@ -68,4 +68,11 @@ class ListingResponse(BaseModel):
 
 class ListingResult(BaseModel):
     listings: List[ListingResponse] = Field(..., description="List of listing responses.")
-    total_count: int = Field(..., description="Total count of listings matching the filters.")
+    total: int = Field(..., description="Total count of listings matching the filters.")
+
+class UpsertResult(BaseModel):
+    inserted: int = Field(0, description="Number of new listings inserted.")
+    updated: int = Field(0, description="Number of existing listings updated.")
+    message: str = Field(
+        f"{inserted} new listing(s) inserted successfully, {updated} existing listings updated successfully",
+        description="Success message with counts of inserted and updated records.")

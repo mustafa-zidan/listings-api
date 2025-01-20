@@ -1,4 +1,6 @@
-from sqlalchemy import Column, Integer, String, JSON
+from sqlalchemy import Column, Integer, String
+from sqlalchemy.dialects.postgresql import JSON
+
 from app.models.base import Base
 
 

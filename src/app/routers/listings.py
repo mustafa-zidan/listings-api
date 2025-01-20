@@ -1,8 +1,10 @@
-from fastapi import APIRouter, HTTPException, Depends
+from typing import Dict, List
+
+from fastapi import APIRouter, HTTPException, Depends, Query
 
 from app.repositories.listing import ListingRepository
 from app.routers.depenency import ListingRepositoryDep, get_listing_repository
-from app.schemas.listing import ListingResponse, ListingResult, ListingFilterSchema
+from app.schemas.listing import ListingResponse, ListingResult, ListingFilterSchema, ListingSchema, UpsertResult
 
 router = APIRouter()
 
@@ -28,50 +30,66 @@ async def get_listing_by_id(
         raise HTTPException(status_code=400, detail=f"Error during retrieval: {str(e)}")
 
 
-
-# @router.post("/bulk")
-# async def bulk_create_listings(
-#         listings: List[ListingSchema],
-#         # repo: ListingRepository = ListingRepositoryDep,
-# ) -> Dict[str, str]:
-#     """
-#     Bulk create multiple listings in the database.
-#
-#     Args:
-#         listings (List[ListingSchema]): List of listing data to be created.
-#         repo (ListingRepository): The repository instance for database operations.
-#
-#     Returns:
-#         dict: A response indicating the success of the operation.
-#     """
-#     try:
-#         # await repo.bulk_create_listings(listings)
-#         return {"message": f"{len(listings)} listings created successfully."}
-#     except Exception as e:
-#         raise HTTPException(status_code=400, detail=f"Error during bulk creation: {str(e)}")
-#
-#
-@router.get("/")
-async def query_listings_with_filters(
-        filters: ListingFilterSchema,
-        page: int = 1,
-        limit: int = 100,
+@router.post("/listings", response_model=UpsertResult)
+async def upsert_listings(
+        listings: list[ListingSchema],
         repo: ListingRepositoryDep = Depends(get_listing_repository),
-) -> ListingResult:
+) -> UpsertResult:
     """
-    Query listings with filters and pagination.
+    Insert or update listings and their related data.
 
     Args:
-        filters (ListingFilterSchema): The filters for querying listings.
-        page Page number for pagination (1-indexed).
-        size Number of listings per page, default 100
+        listings (list[ListingSchema]): List of listings with associated properties and entities.
         repo (ListingRepository): The repository instance for database operations.
 
     Returns:
-        ListingResult: The filtered listings and total count.
+        dict: Success message with counts of inserted and updated records.
     """
     try:
-        values = await repo.get_filtered_listings(filters, page, limit)
-        return ListingResult(listings=[], total_count=0)
+        result = await repo.upsert_listings(listings)
+        return result
     except Exception as e:
-        raise HTTPException(status_code=400, detail=f"Error during query: {str(e)}")
+        raise HTTPException(status_code=400, detail=f"Error during upsert: {str(e)}")
+
+
+@router.get("/listings", response_model=ListingResult)
+async def get_listings(
+        page: int = Query(1, ge=1),
+        limit: int = Query(100, ge=1, le=500),
+        listing_id: str|None = None,
+        scan_date_from: str|None = None,
+        scan_date_to: str|None = None,
+        is_active: bool|None = None,
+        image_hashes: List[str]|None = Query(None),
+        dataset_entities: Dict[str, str]|None = None,
+        property_filters: Dict[int, str]|None = None,
+        repo: ListingRepositoryDep = Depends(get_listing_repository),
+):
+    """
+    Retrieve listings based on filters and pagination.
+
+    Args:
+        page (int): Page number for pagination.
+        limit (int): Number of listings per page.
+        listing_id (Optional[str]): Filter by listing ID.
+        scan_date_from (Optional[str]): Filter by minimum scan date.
+        scan_date_to (Optional[str]): Filter by maximum scan date.
+        is_active (Optional[bool]): Filter by active status.
+        image_hashes (Optional[List[str]]): Filter by image hashes.
+        dataset_entities (Optional[Dict[str, str]]): Filter by dataset entities.
+        property_filters (Optional[Dict[int, str]]): Filter by property ID and values.
+        repo (ListingRepository): The repository instance for database operations.
+
+    Returns:
+        ListingResult: Structured listings and total count.
+    """
+    filters = ListingFilterSchema(
+        listing_id=listing_id,
+        scan_date_from=scan_date_from,
+        scan_date_to=scan_date_to,
+        is_active=is_active,
+        image_hashes=image_hashes,
+        dataset_entities=dataset_entities,
+        property_filters=property_filters,
+    )
+    return await repo.get_filtered_listings(filters, page, limit)
