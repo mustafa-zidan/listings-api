@@ -10,13 +10,9 @@ RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --frozen --no-dev
 
 
-# Then, use a final image without uv
-FROM python:3.12-slim
-
-# Copy the application from the builder
-COPY --from=builder --chown=app:app /app /app
-
 # Place executables in the environment at the front of the path
 ENV PATH="/app/.venv/bin:$PATH"
 
-CMD ["fastapi", "run", "src/app/main.py"]
+WORKDIR /app
+
+CMD ["fastapi", "run", "/app/src/app/main.py"]

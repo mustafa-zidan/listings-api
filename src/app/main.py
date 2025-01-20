@@ -10,4 +10,8 @@ app = FastAPI(
     lifespan=database_lifespan,
 )
 
+@app.get("/")
+async def root():
+    return {"message": "Listings API"}
+
 app.include_router(listings.router, prefix="/api/v1/listings", tags=["listings"])

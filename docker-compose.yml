@@ -2,11 +2,12 @@ services:
   app:
     container_name: listings-api
     build: .
-    command: ["fastapi", "dev", "src/app/main.py"]
+    # enable this for development
+#    command: ["fastapi", "dev", "src/app/main.py"]
     volumes:
       - ./src:/app/src
     environment:
-      - DATABASE_URL=postgresql+asyncpg://user:password@db:5432/listings
+      - DATABASE_URL=postgresql+psycopg://user:password@db:5432/listings
     ports:
       - "8000:8000"
     depends_on:
