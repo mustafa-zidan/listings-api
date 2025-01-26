@@ -25,3 +25,6 @@ out/
 
 # project specific
 .env
+
+# macOS
+.DS_Store

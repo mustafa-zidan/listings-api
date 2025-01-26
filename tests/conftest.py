@@ -1,5 +1,5 @@
 import os
-from typing import AsyncGenerator
+from typing import AsyncGenerator, Any, Generator
 
 import pytest
 from httpx import AsyncClient, ASGITransport
@@ -43,7 +43,7 @@ async def async_client(anyio_backend: str) -> AsyncGenerator[AsyncClient, None]:
 
 
 @pytest.fixture(scope="session")
-def postgres_container() -> PostgresContainer:
+def postgres_container() -> Generator[PostgresContainer, Any, None]:
     """
     Spin up a PostgreSQL container for testing.
 
@@ -118,12 +118,12 @@ async def session(engine: AsyncEngine) -> AsyncGenerator[AsyncSession, None]:
         AsyncSession: A new SQLAlchemy async session for the test.
     """
     # Create a session factory bound to the provided engine
-    SessionFactory = async_sessionmaker(
+    session_factory = async_sessionmaker(
         bind=engine, expire_on_commit=False
     )
 
     # Provide the session to the test
-    async with SessionFactory() as session:
+    async with session_factory() as session:
         yield session
 
         # Truncate all tables in reverse order to avoid foreign key conflicts

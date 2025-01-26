@@ -1,12 +1,13 @@
 from datetime import datetime
-from typing import List, Union, Dict, Any, Optional
+from typing import List, Dict, Any
+
 from pydantic import BaseModel, Field
 
 
 class Property(BaseModel):
     name: str = Field(..., description="The name of the property.")
     type: str = Field(..., description="The type of the property (e.g., 'str', 'bool').")
-    value: Union[str, bool] = Field(..., description="The value of the property.")
+    value: str| bool = Field(..., description="The value of the property.")
 
 
 class Entity(BaseModel):
@@ -60,10 +61,10 @@ class ListingResponse(BaseModel):
     listing_id: str = Field(..., description="The unique identifier for the listing.")
     scan_date: datetime = Field(..., description="The date and time when the listing was scanned.")
     is_active: bool = Field(..., description="Indicates whether the listing is active.")
-    image_hashes: List[str] = Field(default_factory=list(), description="A list of image hashes associated with the listing.")
-    dataset_entity_ids: List[int]|None = Field(default_factory=list(), description="A list of dataset entity IDs linked to the listing.")
-    properties: List[PropertyResponse]|None  = Field(default_factory=list(), description="A list of properties associated with the listing.")
-    entities: List[EntityResponse]|None = Field(default_factory=list(), description="A list of entities associated with the listing.")
+    image_hashes: List[str] = Field(default_factory=list, description="A list of image hashes associated with the listing.")
+    dataset_entity_ids: List[int] | None = Field(default_factory=list, description="A list of dataset entity IDs linked to the listing.")
+    properties: List[PropertyResponse]|None  = Field(default_factory=list, description="A list of properties associated with the listing.")
+    entities: List[EntityResponse]|None = Field(default_factory=list, description="A list of entities associated with the listing.")
 
 
 class ListingResult(BaseModel):

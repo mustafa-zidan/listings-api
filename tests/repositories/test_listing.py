@@ -2,7 +2,6 @@ import uuid
 from datetime import datetime
 
 import pytest
-from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.listing import Listing
@@ -397,9 +396,9 @@ async def test_get_filtered_listings_by_property_filters(session: AsyncSession):
     ]
     await repo.upsert_listings(listings_data)
     expected = await repo.get_listing_by_id("123")
-    property = expected.properties[0]
+    expected_property = expected.properties[0]
     # Act
-    filters = ListingFilterSchema(property_filters={property.property_id: property.value})
+    filters = ListingFilterSchema(property_filters={expected_property.property_id: expected_property.value})
     result = await repo.get_filtered_listings(filters, page=1, limit=100)
 
     # Assert
