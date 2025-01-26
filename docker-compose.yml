@@ -3,7 +3,7 @@ services:
     container_name: listings-api
     build: .
     # enable this for development
-#    command: ["fastapi", "dev", "src/app/main.py"]
+    # command: ["fastapi", "dev", "src/app/main.py"]
     volumes:
       - ./src:/app/src
     environment:
@@ -12,6 +12,19 @@ services:
       - "8000:8000"
     depends_on:
       - postgres
+      - migration
+
+  migration :
+    container_name: listings-migration
+    build: .
+    command: ["alembic", "upgrade", "head"]
+    volumes:
+      - ./src:/app/src
+    environment:
+      - DATABASE_URL=postgresql+psycopg://user:password@db:5432/listings
+    depends_on:
+      - postgres
+
   postgres:
     image: postgres:14
     container_name: postgres
