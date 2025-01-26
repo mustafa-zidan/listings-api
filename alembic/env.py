@@ -128,7 +128,6 @@ def run_migrations_online() -> None:
     asyncio.run(run_async_migrations())
 
 
-
 try:
     logger.info("Starting migration script.")
     setup_alembic_config()
