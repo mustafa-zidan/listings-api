@@ -29,8 +29,10 @@ def get_database_url() -> str:
         return f"postgresql+asyncpg://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}"
 
     logger.error(
-        "DATABASE_URL is not set, and individual database variables (DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASSWORD) are missing."
+        "DATABASE_URL is not set, and individual database variables "
+        "(DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASSWORD) are missing."
     )
     raise ValueError(
-        "You must set either DATABASE_URL or the individual variables  database components: DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASSWORD."
+        "You must set either DATABASE_URL or the individual variables  "
+        "database components: DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASSWORD."
     )
