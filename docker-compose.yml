@@ -7,9 +7,11 @@ services:
     volumes:
       - ./src:/app/src
     environment:
-      - DATABASE_URL=postgresql+psycopg://user:password@db:5432/listings
+      - DATABASE_URL=postgresql+psycopg://user:password@postgres:5432/listings
     ports:
       - "8000:8000"
+    links:
+      - postgres
     depends_on:
       - postgres
       - migration
@@ -21,7 +23,9 @@ services:
     volumes:
       - ./src:/app/src
     environment:
-      - DATABASE_URL=postgresql+psycopg://user:password@db:5432/listings
+      - DATABASE_URL=postgresql+psycopg://user:password@postgres:5432/listings
+    links:
+      - postgres
     depends_on:
       - postgres
 
