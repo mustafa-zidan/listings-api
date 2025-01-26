@@ -1,5 +1,5 @@
-import uuid
 from datetime import datetime
+import uuid
 
 import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -7,7 +7,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.models.listing import Listing
 from app.repositories.listing import ListingRepository
 from app.schemas import ListingSchema
-from app.schemas.listing import Property, Entity, ListingFilterSchema
+from app.schemas.listing import Entity
+from app.schemas.listing import ListingFilterSchema
+from app.schemas.listing import Property
 
 
 @pytest.mark.asyncio

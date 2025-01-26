@@ -1,6 +1,5 @@
 from fastapi import FastAPI
 
-
 from app.core.database import database_lifespan
 from app.routers import listings
 

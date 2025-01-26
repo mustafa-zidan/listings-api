@@ -1,5 +1,11 @@
-from sqlalchemy import Column, String, DateTime, Boolean, ARRAY, Integer
+from sqlalchemy import ARRAY
+from sqlalchemy import Boolean
+from sqlalchemy import Column
+from sqlalchemy import DateTime
+from sqlalchemy import Integer
+from sqlalchemy import String
 from sqlalchemy.orm import relationship
+
 from app.models.base import Base
 
 

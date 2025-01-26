@@ -3,8 +3,11 @@ from typing import Dict
 
 from fastapi import FastAPI
 from psycopg import AsyncConnection
-from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
-from typing_extensions import Any, AsyncIterator
+from sqlalchemy.ext.asyncio import async_sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.ext.asyncio import create_async_engine
+from typing_extensions import Any
+from typing_extensions import AsyncIterator
 
 from app.core.config import get_database_url
 

@@ -21,6 +21,20 @@ test = [
     "testcontainers>=4.9.1",
     "coverage>=7.6.10, <8.0.0",
 ]
+lint = [
+    "isort>=5.13.2, <6.0.0",
+    "pylint>=3.3.3, <4.0.0",
+]
+
+[tool.isort]
+profile = "google"
+line_length = 120
+multi_line_output = 3
+include_trailing_comma = true
+force_grid_wrap = 0
+use_parentheses = true
+known_third_party = ["alembic", "sqlalchemy"]
+skip = [".gitignore", ".dockerignore"]
 
 #[build-system]
 #requires = ["poetry-core>=1.0.0"]

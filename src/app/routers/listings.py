@@ -1,10 +1,18 @@
 from typing import Dict, List
 
-from fastapi import APIRouter, HTTPException, Depends, Query
+from fastapi import APIRouter
+from fastapi import Depends
+from fastapi import HTTPException
+from fastapi import Query
 
 from app.repositories.listing import ListingRepository
-from app.routers.depenency import ListingRepositoryDep, get_listing_repository
-from app.schemas.listing import ListingResponse, ListingResult, ListingFilterSchema, ListingSchema, UpsertResult
+from app.routers.depenency import get_listing_repository
+from app.routers.depenency import ListingRepositoryDep
+from app.schemas.listing import ListingFilterSchema
+from app.schemas.listing import ListingResponse
+from app.schemas.listing import ListingResult
+from app.schemas.listing import ListingSchema
+from app.schemas.listing import UpsertResult
 
 router = APIRouter()
 

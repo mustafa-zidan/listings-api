@@ -1,16 +1,27 @@
 from datetime import datetime
-from typing import List, Sequence, Dict
+from typing import Dict, List, Sequence
 
-from sqlalchemy import func, or_, and_, tuple_, String, Text, cast, JSON
+from sqlalchemy import and_
+from sqlalchemy import func
+from sqlalchemy import or_
+from sqlalchemy import tuple_
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy.orm import selectinload
-from sqlalchemy.dialects import postgresql
 
-
-from app.models import Listing, StringPropertyValue, BooleanPropertyValue, DatasetEntity, Property
-from app.schemas.listing import ListingSchema, ListingResult, ListingResponse, PropertyResponse, EntityResponse, \
-    ListingFilterSchema, UpsertResult, Entity
+from app.models import BooleanPropertyValue
+from app.models import DatasetEntity
+from app.models import Listing
+from app.models import Property
+from app.models import StringPropertyValue
+from app.schemas.listing import Entity
+from app.schemas.listing import EntityResponse
+from app.schemas.listing import ListingFilterSchema
+from app.schemas.listing import ListingResponse
+from app.schemas.listing import ListingResult
+from app.schemas.listing import ListingSchema
+from app.schemas.listing import PropertyResponse
+from app.schemas.listing import UpsertResult
 
 
 class ListingRepository:

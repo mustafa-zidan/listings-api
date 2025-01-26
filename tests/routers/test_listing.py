@@ -1,11 +1,12 @@
 from datetime import datetime
 
-import pytest
 from httpx import AsyncClient
+import pytest
 
 from app.repositories.listing import ListingRepository
 from app.schemas import ListingSchema
-from app.schemas.listing import Property, Entity
+from app.schemas.listing import Entity
+from app.schemas.listing import Property
 
 
 @pytest.mark.asyncio
