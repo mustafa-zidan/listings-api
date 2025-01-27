@@ -55,6 +55,7 @@ async def test_create_listing_with_nested_objects(session: AsyncSession):
 
     # Act
     await repo.create_listing_with_nested_objects(listing_data)
+    await session.commit()
     created_listing = await repo.get_listing_by_id(listing_data.listing_id)
 
     # Assert

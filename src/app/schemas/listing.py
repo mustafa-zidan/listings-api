@@ -6,6 +6,7 @@ from typing import Any, Dict, List
 
 from pydantic import BaseModel
 from pydantic import Field
+from pydantic import field_validator
 
 
 class Property(BaseModel):
@@ -36,6 +37,23 @@ class ListingSchema(BaseModel):
     properties: List[Property] = Field(..., description="List of associated properties.")
     entities: List[Entity] = Field(..., description="List of associated dataset entities.")
 
+    @field_validator("scan_date", mode="before")
+    def parse_scan_date(cls, value):
+        if isinstance(value, datetime):
+            return value  # Already a datetime object
+        for fmt in ("%Y-%m-%d %H:%M:%S", "%Y-%m-%dT%H:%M:%S"):
+            try:
+                return datetime.strptime(value, fmt)
+            except ValueError:
+                continue
+        raise ValueError(f"Invalid date format for scan_date: {value}")
+
+
+class UpsertListingsSchema(BaseModel):
+    """
+    Represents the request schema for upserting listings.
+    """
+    listings: List[ListingSchema] = Field(..., description="List of listings to upsert.")
 
 class ListingFilterSchema(BaseModel):
     """

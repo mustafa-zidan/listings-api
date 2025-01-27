@@ -62,8 +62,8 @@ class DatabaseSessionManager:
 
         session = self._sessionmaker()
         try:
-            async with session.begin():
-                yield session
+            yield session
+            await session.commit()
         except Exception:
             await session.rollback()
             raise
@@ -90,7 +90,6 @@ async def database_lifespan(app: FastAPI):
     """
     Close the DB connection when the app is shut down to avoid resource leaks.
     """
-    sessionmanager.connect()
     yield
     if sessionmanager.engine is not None:
         # Close the DB connection

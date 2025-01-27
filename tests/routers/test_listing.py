@@ -28,6 +28,7 @@ async def test_get_listing_by_id(async_client: AsyncClient, session):
         ],
     )
     await repo.create_listing_with_nested_objects(listing_data)
+    await session.commit()
 
     # Act
     response = await async_client.get("/api/v1/listings/test123")

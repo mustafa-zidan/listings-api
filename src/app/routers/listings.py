@@ -8,7 +8,7 @@ from fastapi import Query
 from app.repositories.listing import ListingRepository
 from app.routers.depenency import get_listing_repository
 from app.routers.depenency import ListingRepositoryDep
-from app.schemas.listing import ListingFilterSchema
+from app.schemas.listing import ListingFilterSchema, UpsertListingsSchema
 from app.schemas.listing import ListingResponse
 from app.schemas.listing import ListingResult
 from app.schemas.listing import ListingSchema
@@ -17,11 +17,11 @@ from app.schemas.listing import UpsertResult
 router = APIRouter()
 
 
-@router.get("/{listing_id}", response_model=ListingResponse)
+@router.get("/{listing_id}", response_model=ListingResponse|None)
 async def get_listing_by_id(
         listing_id: str,
         repo: ListingRepositoryDep = Depends(get_listing_repository),
-) -> ListingResponse:
+) -> ListingResponse|None:
     """
     Retrieve a listing by its ID.
 
@@ -38,29 +38,29 @@ async def get_listing_by_id(
         raise HTTPException(status_code=400, detail=f"Error during retrieval: {str(e)}")
 
 
-@router.post("/listings", response_model=UpsertResult)
+@router.post("/", response_model=UpsertResult)
 async def upsert_listings(
-        listings: list[ListingSchema],
+        listings: UpsertListingsSchema,
         repo: ListingRepositoryDep = Depends(get_listing_repository),
 ) -> UpsertResult:
     """
     Insert or update listings and their related data.
 
     Args:
-        listings (list[ListingSchema]): List of listings with associated properties and entities.
-        repo (ListingRepository): The repository instance for database operations.
+        listings (UpsertListingsSchema): List of listings with associated properties and entities.
+        repo (ListingRepository): The repository instance Dependency for database operations.
 
     Returns:
         dict: Success message with counts of inserted and updated records.
     """
     try:
-        result = await repo.upsert_listings(listings)
+        result = await repo.upsert_listings(listings.listings)
         return result
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Error during upsert: {str(e)}")
 
 
-@router.get("/listings", response_model=ListingResult)
+@router.get("/filter", response_model=ListingResult)
 async def get_listings(
         page: int = Query(1, ge=1),
         limit: int = Query(100, ge=1, le=500),
@@ -79,13 +79,13 @@ async def get_listings(
     Args:
         page (int): Page number for pagination.
         limit (int): Number of listings per page.
-        listing_id (Optional[str]): Filter by listing ID.
-        scan_date_from (Optional[str]): Filter by minimum scan date.
-        scan_date_to (Optional[str]): Filter by maximum scan date.
-        is_active (Optional[bool]): Filter by active status.
-        image_hashes (Optional[List[str]]): Filter by image hashes.
-        dataset_entities (Optional[Dict[str, str]]): Filter by dataset entities.
-        property_filters (Optional[Dict[int, str]]): Filter by property ID and values.
+        listing_id (str|None): Filter by listing ID.
+        scan_date_from (str|None): Filter by minimum scan date.
+        scan_date_to (str|None): Filter by maximum scan date.
+        is_active (bool|None): Filter by active status.
+        image_hashes (List[str]|None): Filter by image hashes.
+        dataset_entities (Dict[str, str]|None): Filter by dataset entities.
+        property_filters (Dict[int, str]|None): Filter by property ID and values.
         repo (ListingRepository): The repository instance for database operations.
 
     Returns:

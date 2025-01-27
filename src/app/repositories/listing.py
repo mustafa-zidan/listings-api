@@ -78,14 +78,13 @@ class ListingRepository:
             image_hashes=listing.image_hashes,
             dataset_entity_ids=[]
         )
-        # Handle entities    t
         for entity in listing.entities:
             model_entity = DatasetEntity(
                 name=entity.name,
                 data=entity.data
             )
             self.session.add(model_entity)
-            await self.session.commit()
+            await self.session.flush()
             new_listing.dataset_entity_ids.append(model_entity.entity_id)
 
         self.session.add(new_listing)
@@ -105,7 +104,6 @@ class ListingRepository:
             )
             self.session.add(model_property)
         self.session.add(new_listing)
-        await self.session.commit()
         return new_listing
 
     async def _get_or_create_property(self, name: str, type_: str) -> Property:
@@ -139,7 +137,7 @@ class ListingRepository:
             list[ListingResponse]: A list of ListingResponse objects.
         """
 
-        # Fetch existing listings and create a dictionary for quick lookup
+        # Fetch existing listings and create a dictionary for a quick lookup
         existing_listings = await self._fetch_existing_listings([l.listing_id for l in listings])
         existing_map = {l.listing_id: l for l in existing_listings}
 
@@ -316,7 +314,7 @@ class ListingRepository:
         Returns:
             None
         """
-        # Create a dictionary of (name, type) to value mappings
+        # Create a dictionary of (name, a type) to value mappings
         names_and_types = {(prop.name, prop.type): prop.value for prop in updated.properties}
 
         # Fetch properties matching the given names and types
@@ -350,7 +348,7 @@ class ListingRepository:
         Fetch properties matching the given names and types.
 
         Args:
-            names_and_types (Dict[tuple, str]): A dictionary of (name, type) to value mappings.
+            names_and_types (Dict[tuple, str]): A dictionary of (name, a type) to value mappings.
 
         Returns:
             Dict[tuple, Property]: A dictionary of (name, type) to Property objects.
@@ -386,7 +384,7 @@ class ListingRepository:
         result = await self.session.execute(query)
         existing_entities = result.scalars().all()
         existing_map = {entity.name: entity for entity in existing_entities}
-        upserted = list()
+        upserted = list() # noqa F841
         for entity in entities:
             if entity.name in existing_map:
                 existing_map[entity.name].data = entity.data
